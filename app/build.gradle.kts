@@ -1,14 +1,14 @@
 plugins {
-id("com.android.application") version "8.5.2"
-id("org.jetbrains.kotlin.android") version "1.9.24"
+id("com.android.application")
+id("org.jetbrains.kotlin.android")
 }
 
 android {
-namespace = "com.winarm"
+namespace = "com.example.winarm"
 compileSdk = 34
 
 defaultConfig {
-    applicationId = "com.winarm"
+    applicationId = "com.example.winarm"
     minSdk = 26
     targetSdk = 34
     versionCode = 1
