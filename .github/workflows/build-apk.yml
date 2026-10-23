@@ -1,6 +1,6 @@
 name: Build WinArm APK
 
-'on':
+on:
 workflow_dispatch:
 push:
 branches:
@@ -29,23 +29,18 @@ steps:
     uses: android-actions/setup-android@v3
 
   - name: Install Android SDK packages
-    run: sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
-
-  - name: Grant Gradle permission
     run: |
-      if [ -f ./gradlew ]; then
-        chmod +x ./gradlew
-      fi
+      sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
 
-  - name: Build APK
+  - name: Grant execute permission to Gradle wrapper
     run: |
-      if [ -f ./gradlew ]; then
-        ./gradlew assembleDebug --no-daemon
-      else
-        gradle assembleDebug --no-daemon
-      fi
+      chmod +x ./gradlew
 
-  - name: Upload APK
+  - name: Build Debug APK
+    run: |
+      ./gradlew assembleDebug --stacktrace
+
+  - name: Upload Debug APK
     uses: actions/upload-artifact@v4
     with:
       name: WinArm-debug-apk
