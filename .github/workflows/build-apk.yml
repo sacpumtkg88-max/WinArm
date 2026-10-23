@@ -29,8 +29,7 @@ steps:
     uses: android-actions/setup-android@v3
 
   - name: Install Android SDK packages
-    run: |
-      sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
+    run: sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
 
   - name: Grant Gradle permission
     run: |
