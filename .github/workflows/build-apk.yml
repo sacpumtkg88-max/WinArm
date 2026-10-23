@@ -1,6 +1,6 @@
 name: Build WinArm APK
 
-'on':
+on:
   workflow_dispatch:
   push:
     branches:
@@ -24,22 +24,46 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
+          cache: gradle
 
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
 
       - name: Install Android SDK packages
         run: |
-          yes | sdkmanager --licenses
-          sdkmanager --install "platforms;android-34" "build-tools;34.0.0"
+          set -e
+          sdkmanager --licenses
+          sdkmanager \
+            "platform-tools" \
+            "platforms;android-34" \
+            "build-tools;34.0.0"
 
-      - name: Set up Gradle 8.7
-        uses: gradle/actions/setup-gradle@v4
-        with:
-          gradle-version: '8.7'
+      - name: Verify Android project
+        run: |
+          set -e
+          echo "Checking project files..."
+          test -f settings.gradle.kts -o -f settings.gradle
+          test -f build.gradle.kts -o -f build.gradle
+          test -f app/build.gradle.kts -o -f app/build.gradle
+          echo "Android project files found."
+
+      - name: Prepare Gradle wrapper
+        run: |
+          set -e
+          if [ -f ./gradlew ]; then
+            chmod +x ./gradlew
+          elif [ -f gradlew ]; then
+            chmod +x gradlew
+          else
+            echo "::error::Gradle wrapper (gradlew) is missing."
+            echo "The project must include gradlew and gradle/wrapper/gradle-wrapper.jar."
+            exit 1
+          fi
 
       - name: Build Debug APK
-        run: gradle :app:assembleDebug --no-daemon --stacktrace
+        run: |
+          set -e
+          ./gradlew --no-daemon --stacktrace assembleDebug
 
       - name: Upload Debug APK
         uses: actions/upload-artifact@v4
